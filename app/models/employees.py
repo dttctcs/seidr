@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Text
+from sqlalchemy import Column, Integer, String, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from flask_appbuilder import Model
 
@@ -15,6 +15,8 @@ class Department(Model):
 class Function(Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
+    employee_id = Column(Integer, ForeignKey('employee.id'), nullable=False)
+    employee = relationship("Employee")
 
     def __repr__(self):
         return self.name
@@ -32,8 +34,9 @@ class Employee(Model):
     employee_number = Column(Integer, nullable=False)
     department_id = Column(Integer, ForeignKey('department.id'), nullable=False)
     department = relationship("Department")
-    function_id = Column(Integer, ForeignKey('function.id'), nullable=False)
-    function = relationship("Function")
+    # function_id = Column(Integer, ForeignKey('function.id'), nullable=False)
+    # function = relationship("Function")
+
     # begin_date = Column(Date, default=today, nullable=False)
     # end_date = Column(Date, nullable=True)
 
