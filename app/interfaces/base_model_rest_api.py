@@ -1,7 +1,5 @@
-from flask_appbuilder.api import BaseApi, ModelRestApi, merge_response_func, expose, safe, rison, get_info_schema, \
-    get_list_schema
+from flask_appbuilder.api import BaseApi, ModelRestApi, merge_response_func, expose, safe, rison, get_info_schema
 from flask_appbuilder._compat import as_unicode
-from flask_appbuilder.models.sqla.filters import FilterEqualFunction
 
 from flask_appbuilder.security.decorators import permission_name, protect
 
