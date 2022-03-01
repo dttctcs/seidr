@@ -30,7 +30,7 @@ def create_app(name):
         zipfile = ZipFile(BytesIO(url.read()))
         zipfile.extractall()
         os.rename(dirname, name)
-        click.echo(click.style("Downloaded the skeleton app, good coding!", fg="green"))
+        click.echo(click.style("Downloaded the skeleton app. Happy coding!", fg="green"))
         return True
     except Exception as e:
         click.echo(click.style("Something went wrong {0}".format(e), fg="red"))
