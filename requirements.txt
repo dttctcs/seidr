@@ -1,2 +1,0 @@
-Flask-AppBuilder
-flask_cors
