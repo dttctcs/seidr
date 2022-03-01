@@ -1,7 +1,7 @@
 from flask_appbuilder.security.sqla.models import Permission
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 
-from app.interfaces import BaseModelRestApi
+from src.interfaces import BaseModelRestApi
 
 
 class PermissionsApi(BaseModelRestApi):
