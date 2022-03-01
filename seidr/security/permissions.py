@@ -1,17 +1,16 @@
-from flask_appbuilder.security.sqla.models import PermissionView
+from flask_appbuilder.security.sqla.models import Permission
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 
-from src.interfaces import BaseModelRestApi
+from seidr.interfaces import BaseModelRestApi
 
 
-class PermissionViewApi(BaseModelRestApi):
+class PermissionsApi(BaseModelRestApi):
     # Will allow flask-login cookie authorization on the API
     allow_browser_login = True
-    datamodel = SQLAInterface(PermissionView)
-
+    datamodel = SQLAInterface(Permission)
     # this also effects schema of related models
     page_size = 200
     max_page_size = 200
 
-    resource_name = "permissionview"
+    resource_name = "permissions"
     base_permissions = ['can_get', 'can_info']
