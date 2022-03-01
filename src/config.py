@@ -15,7 +15,7 @@ SECRET_KEY = "\2\1thisismyscretkey\1\2\e\y\y\h"
 #             'port': 6666}
 
 # The SQLAlchemy connection string.
-SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "seidr.db")
+SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "src.db")
 # SQLALCHEMY_DATABASE_URI = 'mysql://myapp@localhost/myapp'
 # SQLALCHEMY_DATABASE_URI = 'postgresql://root:password@localhost/myapp'
 
@@ -70,7 +70,7 @@ AUTH_TYPE = AUTH_DB
 BABEL_DEFAULT_LOCALE = "en"
 # Your application default translation path
 BABEL_DEFAULT_FOLDER = "translations"
-# The allowed translation for you seidr
+# The allowed translation for you src
 LANGUAGES = {
     "en": {"flag": "gb", "name": "English"},
 }
