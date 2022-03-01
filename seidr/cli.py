@@ -14,11 +14,6 @@ def cli():
     pass
 
 
-@cli.command()
-def hello():
-    click.echo("Hello World")
-
-
 @cli.command("create-app")
 @click.option(
     "--name",
@@ -31,7 +26,7 @@ def create_app(name):
     """
     try:
         url = urlopen(REPO_URL)
-        dirname = "seidr-test"
+        dirname = "seidr-skeleton-main"
         zipfile = ZipFile(BytesIO(url.read()))
         zipfile.extractall()
         os.rename(dirname, name)
