@@ -1,7 +1,7 @@
 from flask_appbuilder.security.sqla.models import ViewMenu
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 
-from src.interfaces import BaseModelRestApi
+from seidr.interfaces import BaseModelRestApi
 
 
 class ViewsMenusApi(BaseModelRestApi):

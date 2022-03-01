@@ -6,7 +6,7 @@ from flask_appbuilder.security.decorators import permission_name, protect
 from flask_appbuilder.const import API_ADD_COLUMNS_RIS_KEY, API_ADD_TITLE_RIS_KEY, API_PERMISSIONS_RIS_KEY, \
     API_EDIT_COLUMNS_RIS_KEY, API_FILTERS_RIS_KEY, API_EDIT_TITLE_RIS_KEY, API_FILTERS_RES_KEY
 
-from src.interfaces.convert import Model2SchemaConverter
+from seidr.interfaces.convert import Model2SchemaConverter
 
 
 class BaseModelRestApi(ModelRestApi):
