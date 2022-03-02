@@ -20,7 +20,7 @@ All you need is to install **Seidr**, really...
 
 ### Get Started
 
-To jump start your application **Seidr** provides a skeleton which you can install with a **Seidr's** CLI tool
+To jump start your application **Seidr** provides a skeleton which you can install with **Seidr's** CLI tool
 
 - Install Skeleton app: `seidr create-app`
 
