@@ -4,9 +4,10 @@ A set of extensions for <a href="https://flask-appbuilder.readthedocs.io/en/late
 
 ## Usage
 
-**Seidr** allows you to create APIs with [OpenAPI 3.0](https://swagger.io/specification/) based configuration files. Using
-the `BaseModelRestApi` and `Security Apis` provided by **Seidr**, you can leverage the full feature set of FlaskAppbuilder
+Using the `BaseModelRestApi` and `Security Apis` provided by **Seidr**, you can leverage the full feature set of FlaskAppbuilder
 decoupled from its Server Side Rendering (ModelView) features. :sparkles:
+
+Comming soon: **Seidr** will allow you to create APIs with [OpenAPI 3.0](https://swagger.io/specification/) based configuration files. 
 
 ### Prerequisites
 
