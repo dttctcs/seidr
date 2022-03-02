@@ -2,7 +2,7 @@ from flask_appbuilder.api import expose
 from flask_appbuilder.security.sqla.models import Role
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 
-from app.interfaces import BaseModelRestApi
+from seidr.interfaces import BaseModelRestApi
 
 
 class RolesApi(BaseModelRestApi):
