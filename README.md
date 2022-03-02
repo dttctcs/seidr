@@ -4,31 +4,25 @@ A set of extensions for <a href="https://flask-appbuilder.readthedocs.io/en/late
 
 ## Usage
 
-Add a **usage description** here.:sparkles:
+**Seidr** allows you to create APIs with [OpenAPI 3.0](https://swagger.io/specification/) based configuration files. Using
+the `BaseModelRestApi` and `Security Apis` provided by **Seidr**, you can leverage the full feature set of FlaskAppbuilder
+decoupled from its Server Side Rendering (ModelView) featurs. :sparkles:
 
 ### Prerequisites
 
-- step 1: `code or command here`
-    - step 1a
-    - step 1b
-- step 2: `code or command here`
-- step 3 ...
+All you need is to install **Seidr**, really...
 
-### For Development
+- Create a virtual environment: `python3 -m venv venv` (or with your IDE)
+- Activate virtual environment: `source venv/bin/activate`
+- Install requirements
+  - Either `pip install git+https://github.com/dttctcs/seidr.git`
+  - Or add `git+https://github.com/dttctcs/seidr.git` to your `requirements.txt` and do `pip install`
 
-- I: `code or command here`
-    - step Ia
-    - step Ib: `code or command here`
-- step II: `code or command here`
-- step II ...
+### Get Started
 
-### For Production
+To jump start your application **Seidr** provides skeleton which you can install with a **Seidrs** CLI tool
 
-- step 1
-    - step 1a
-    - step 1b
-- step 2
-- step 3 ...
+- Install Skeleton app: `seidr create-app`
 
 ## Configuration
 

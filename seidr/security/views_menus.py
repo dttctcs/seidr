@@ -8,6 +8,8 @@ class ViewsMenusApi(BaseModelRestApi):
     # Will allow flask-login cookie authorization on the API
     allow_browser_login = True
     datamodel = SQLAInterface(ViewMenu)
+
+    # this also effects schema of related models
     page_size = 200
     max_page_size = 200
 
