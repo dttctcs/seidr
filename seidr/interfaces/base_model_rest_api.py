@@ -33,10 +33,12 @@ class BaseModelRestApi(ModelRestApi):
         for related_api in self.related_apis:
             foreign_key = related_api.datamodel.get_related_fk(self.datamodel.obj)
             relation_type = "rel_o_m" if related_api.datamodel.is_relation_many_to_one(foreign_key) else "rel_m_m"
-            relation = {'name': related_api.datamodel.model_name,
-                        'foreign_key': foreign_key,
-                        'type': relation_type,
-                        "path": related_api.resource_name + '/' or type(related_api).__name__ + '/'}
+            relation = {
+                'name': related_api.list_title if related_api.list_title else self._prettify_name(
+                    related_api.datamodel.model_name),
+                'foreign_key': foreign_key,
+                'type': relation_type,
+                "path": related_api.resource_name + '/' or type(related_api).__name__ + '/'}
 
             relations.append(relation)
 
@@ -52,16 +54,16 @@ class BaseModelRestApi(ModelRestApi):
         # Get possible search fields and all possible operations
         search_filters = dict()
         dict_filters = self._filters.get_search_filters()
-    
-        for col in self.list_columns:
+
+        for col in self.show_columns:
             search_filters[col] = {'filters': [
                 {"name": as_unicode(flt.name), "operator": flt.arg_name,
                  }
                 for flt in dict_filters[col]
             ]}
             # Add schema info
-            search_filters[col]['schema'] = self._get_field_info(self.list_model_schema.fields[col],
-                                                                 self.list_model_schema)
+            search_filters[col]['schema'] = self._get_field_info(self.show_model_schema.fields[col],
+                                                                 self.show_model_schema)
         response[API_FILTERS_RES_KEY] = search_filters
 
     @expose("/_info", methods=["GET"])
