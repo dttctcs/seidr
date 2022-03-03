@@ -1,6 +1,5 @@
 <h1 align="center">Seidr</h1><br>  
-<p align="center">  
-A set of extensions for <a href="https://flask-appbuilder.readthedocs.io/en/latest/">FlaskAppbuilder</a></p>
+<p align="center">A set of extensions for <a href="https://github.com/dpgaspar/Flask-AppBuilder">FlaskAppbuilder</a></p>
 
 ## Usage
 
@@ -13,7 +12,7 @@ Comming soon: **Seidr** will allow you to create APIs with [OpenAPI 3.0](https:/
 
 All you need is to install **Seidr**, really...
 
-- Create a virtual environment: `python3 -m venv venv` (or with your IDE)
+- Create a virtual environment: `python -m venv venv` (or with your IDE)
 - Activate virtual environment: `source venv/bin/activate`
 - Install requirements
   - Either `pip install git+https://github.com/dttctcs/seidr.git`
