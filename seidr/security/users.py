@@ -1,5 +1,9 @@
+import datetime
+
+from flask import g
 from flask_appbuilder.security.sqla.models import User
 from flask_appbuilder.models.sqla.interface import SQLAInterface
+from werkzeug.security import generate_password_hash
 
 from seidr.interfaces import BaseModelRestApi
 
@@ -16,3 +20,10 @@ class UsersApi(BaseModelRestApi):
     show_exclude_columns = ["password", "changed"]
     edit_columns = ["first_name", "last_name", "username", "email", "active", "roles"]
     add_columns = ["first_name", "last_name", "username", "active", "email", "roles", "password"]
+
+    def pre_update(self, item):
+        item.changed_on = datetime.datetime.now()
+        item.changed_by_fk = g.user.id
+
+    def pre_add(self, item):
+        item.password = generate_password_hash(item.password)

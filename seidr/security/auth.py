@@ -307,6 +307,8 @@ class AuthApi(BaseApi):
            500:
              $ref: '#/components/responses/500'
         """
+        if not self.appbuilder.get_app.config["AUTH_USER_REGISTRATION"]:
+            self.response_500()
 
         # read and validate data
         username = request.json.get(API_SECURITY_USERNAME_KEY, None)
