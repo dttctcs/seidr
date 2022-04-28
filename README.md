@@ -16,7 +16,7 @@ All you need is to install **Seidr**, really...
 - Activate virtual environment: `source venv/bin/activate`
 - Install requirements
   - Either `pip install git+https://github.com/dttctcs/seidr.git`
-  - Or add `git+https://github.com/dttctcs/seidr.git` to your `requirements.txt` and do `pip install`
+  - Or add `git+https://github.com/dttctcs/seidr.git` to your `requirements.txt` and do `pip install -r requirements.txt`
 
 ### Get Started
 
