@@ -1,2 +1,2 @@
-Flask-AppBuilder==3.4.4
+Flask-AppBuilder==4.1.0
 markupsafe==2.0.1
