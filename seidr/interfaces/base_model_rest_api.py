@@ -55,7 +55,7 @@ class BaseModelRestApi(ModelRestApi):
         search_filters = dict()
         dict_filters = self._filters.get_search_filters()
 
-        for col in self.show_columns:
+        for col in self.search_columns:
             search_filters[col] = {'filters': [
                 {"name": as_unicode(flt.name), "operator": flt.arg_name,
                  }
