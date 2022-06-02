@@ -18,6 +18,7 @@ class UsersApi(BaseModelRestApi):
     label_columns = {"username": "Benutzername", "first_name": 'Vorname', "last_name": "Nachname", "email": "Email",
                      "active": 'Aktiv', "login_count": "Anzahl Logins", "roles": "Rollen "}
     show_exclude_columns = ["password", "changed"]
+    search_exclude_columns = ["password", "changed"]
     edit_columns = ["first_name", "last_name", "username", "email", "active", "roles"]
     add_columns = ["first_name", "last_name", "username", "active", "email", "roles", "password"]
 
