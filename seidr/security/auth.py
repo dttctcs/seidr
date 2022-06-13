@@ -2,8 +2,15 @@ import jwt
 import re
 
 from flask import g, request, redirect
-from flask_appbuilder.security.decorators import has_access_api, has_access
 from flask_login import login_user, logout_user
+
+from flask_appbuilder import expose
+from flask_appbuilder.api import BaseApi, Model2SchemaConverter, safe
+from flask_appbuilder.models.sqla.interface import SQLAInterface
+from flask_appbuilder.security.decorators import has_access_api
+from flask_appbuilder.security.manager import AUTH_OID, AUTH_DB, AUTH_LDAP, AUTH_OAUTH, AUTH_REMOTE_USER
+from flask_appbuilder.security.sqla.models import User
+
 from werkzeug.security import generate_password_hash
 
 from flask_appbuilder.const import (
@@ -11,17 +18,14 @@ from flask_appbuilder.const import (
     API_SECURITY_USERNAME_KEY,
 )
 
-from flask_appbuilder import expose
-from flask_appbuilder.api import BaseApi, safe
-
 """ 
 These should prob be in the core
- 
+
 Even though API_SECURITY_PROVIDER_DB and API_SECURITY_PROVIDER_LDAP are exposed, the associated Key 
 API_SECURITY_PROVIDER_KEY is "provider" which collides with providers of the `oauth` method
 
 """
-API_SECURITY_METHOD_KEY = "method"
+
 API_SECURITY_METHOD_DB = "db"
 API_SECURITY_METHOD_LDAP = "ldap"
 API_SECURITY_METHOD_OAUTH = "oauth"
@@ -48,6 +52,37 @@ class AuthApi(BaseApi):
     Fore more details see https://flask-appbuilder.readthedocs.io/en/latest/security.html
     """
     resource_name = "auth"
+    # TODO: The datamodel of UserApi should be the same as the user_model in SecurityManger
+    datamodel = SQLAInterface(User)
+    model2schemaconverter = Model2SchemaConverter
+
+    show_exclude_columns = ['password', 'changed', 'created', 'changed_by', 'created_by']
+
+    def __init__(self):
+        super(AuthApi, self).__init__()
+        list_cols = self.datamodel.get_user_columns_list()
+        self.show_columns = [x for x in list_cols if x not in self.show_exclude_columns]
+        self.model2schemaconverter = self.model2schemaconverter(self.datamodel, {})
+
+    def get_client_user_data(self, user):
+        """
+        Creates user data to be exposed to the client (this should probably be part of user's db data)
+        :param user: raw user data from db
+        :return: user data where sensitive data is filtered and menu permission data is added
+        """
+
+        # use marshmallow to serialize data
+        show_model_schema = self.model2schemaconverter.convert(self.show_columns)
+        user_data = show_model_schema.dump(user, many=False)
+
+        # get menu permissions - this could be more sophisticated
+        sm = self.appbuilder.sm
+        role_ids = [role.id for role in user.roles]
+        menu_permissions = [menuApi for menuApi in ['UsersApi', 'RolesApi', 'PermissionsApi', 'PermissionViewApi'] if
+                            sm.exist_permission_on_roles(menuApi, "can_get", role_ids)]
+        user_data['menu_permissions'] = menu_permissions
+
+        return user_data
 
     @expose('/login', methods=["POST"])
     @safe
@@ -74,14 +109,6 @@ class AuthApi(BaseApi):
                        example: complex-password
                        type: string
                        required: true
-                     method:
-                       description: Choose an authentication method
-                       example: db
-                       type: string
-                       enum:
-                       - db
-                       - ldap
-                       required: true
            responses:
              200:
                description: Authentication Successful
@@ -94,39 +121,42 @@ class AuthApi(BaseApi):
          """
 
         if g.user is not None and g.user.is_authenticated:
-            return self.response(200, message="User is already logged in")
+            user_data = self.get_client_user_data(g.user)
+            return self.response(200, **user_data)
 
         # Read and validate request body
         if not request.is_json:
             return self.response_400(message="Request payload is not JSON")
         username = request.json.get(API_SECURITY_USERNAME_KEY, None)
         password = request.json.get(API_SECURITY_PASSWORD_KEY, None)
-        method = request.json.get(API_SECURITY_METHOD_KEY, None)
 
-        if not username or not password or not method:
+        if not username or not password:
             return self.response_400(message="Missing required parameter")
 
         # Authenticate based on method
         user = None
-        if method == API_SECURITY_METHOD_DB:
+        method = self.appbuilder.sm.auth_type
+        if method == AUTH_DB:
             user = self.appbuilder.sm.auth_user_db(username, password)
-        elif method == API_SECURITY_METHOD_LDAP:
+        elif method == AUTH_LDAP:
             user = self.appbuilder.sm.auth_user_ldap(username, password)
 
-        elif method == API_SECURITY_METHOD_REMOTE:
+        elif method == AUTH_REMOTE_USER:
             username = request.environ.get("REMOTE_USER")
             if username:
                 user = self.appbuilder.sm.auth_user_remote_user(username)
         else:
-            return self.response_400(
+            return self.response_500(
                 message="Method {} not supported".format(method)
             )
         if not user:
             return self.response_401()
 
+        # get client user data
+        user_data = self.get_client_user_data(user)
         # Set session cookie
         login_user(user, remember=False)
-        return self.response(200, message="Login successful")
+        return self.response(200, **user_data)
 
     @expose('/login/<provider>', methods=["GET"])
     @safe
@@ -242,7 +272,6 @@ class AuthApi(BaseApi):
 
             return redirect(self.appbuilder.app.config["REDIRECT_URI"])
 
-    @has_access_api
     @expose('/logout', methods=["GET"])
     @safe
     def logout(self):
@@ -263,50 +292,50 @@ class AuthApi(BaseApi):
           create a custom SecurityManager class. As a starting point see `auth_user_db`, `auth_user_ldap` or
           `auth_user_oauth` methods in flask_appbuilder.security.sqla/manager.manager.SecurityManager.
           Adjust the front end accordingly.
-       ---
-       post:
-         description: >-
-           Register user and create a session cookie
-         requestBody:
-           required: true
-           content:
-             application/json:
-               schema:
-                 type: object
-                 properties:
-                   username:
-                     description: The username of the new user
-                     example: user1234
-                     type: string
-                     required: true
-                   firstname:
-                     description: The first name of the new user
-                     example: John
-                     type: string
-                     required: true
-                   lastname:
-                     description: The last name of the new user
-                     example: Doe
-                     type: string
-                     required: true
-                   email:
-                     description: The last name of the new user
-                     example: Doe
-                     type: string
-                     required: true
-                   password:
-                     description: The password for authentication
-                     example: complex-password
-                     type: string
-                     required: true
-         responses:
-           200:
-             description: Authentication Successful
-           400:
-             $ref: '#/components/responses/400'
-           500:
-             $ref: '#/components/responses/500'
-        """
+        ---
+        post:
+          description: >-
+            Register user and create a session cookie
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    username:
+                      description: The username of the new user
+                      example: user1234
+                      type: string
+                      required: true
+                    firstname:
+                      description: The first name of the new user
+                      example: John
+                      type: string
+                      required: true
+                    lastname:
+                      description: The last name of the new user
+                      example: Doe
+                      type: string
+                      required: true
+                    email:
+                      description: The last name of the new user
+                      example: Doe
+                      type: string
+                      required: true
+                    password:
+                      description: The password for authentication
+                      example: complex-password
+                      type: string
+                      required: true
+          responses:
+            200:
+              description: Authentication Successful
+            400:
+              $ref: '#/components/responses/400'
+            500:
+              $ref: '#/components/responses/500'
+         """
         if not self.appbuilder.get_app.config["AUTH_USER_REGISTRATION"]:
             self.response_500()
 
@@ -316,7 +345,7 @@ class AuthApi(BaseApi):
         lastname = request.json.get(API_SECURITY_LASTNAME_KEY, None)
         email = request.json.get(API_SECURITY_EMAIL_KEY, None)
         password = request.json.get(API_SECURITY_PASSWORD_KEY, None)
-        print(username, firstname, lastname, email, password)
+
         if not username or not firstname or not lastname or not email or not password:
             return self.response_400(message="Missing required parameter")
 
@@ -334,6 +363,106 @@ class AuthApi(BaseApi):
             return self.response_500()
         else:
             return self.response(200, message="Registration successful")
+
+    @has_access_api
+    @expose('/user', methods=["GET"])
+    @safe
+    def user(self):
+        """User endpoint for the API, returns the current user data
+         ---
+         get:
+           description: >-
+             Get user data
+           responses:
+             200:
+               description: Authentication Successful
+         """
+        user_data = self.get_client_user_data(g.user)
+        return self.response(200, **user_data)
+
+    @has_access_api
+    @expose('/user', methods=["PUT"])
+    @safe
+    def update(self):
+        """Update user endpoint for the API, updates user data
+             ---
+             post:
+               description: >-
+                 Update user information
+               requestBody:
+                 required: true
+                 content:
+                   application/json:
+                     schema:
+                       type: object
+                       properties:
+                         firstname:
+                           description: The username for authentication
+                           example: john
+                           type: string
+                           required: true
+                         lastname:
+                           description: The password for authentication
+                           example: doe
+                           type: string
+                           required: true
+               responses:
+                 200:
+                   description: Update Successful
+                 400:
+                   $ref: '#/components/responses/400'
+                 401:
+                   $ref: '#/components/responses/401'
+                 500:
+                   $ref: '#/components/responses/500'
+             """
+        firstname = request.json.get('firstname', None)
+        lastname = request.json.get('lastname', None)
+        item = self.appbuilder.sm.get_user_by_id(g.user.id)
+
+        # update user
+        item.first_name = firstname
+        item.last_name = lastname
+        self.appbuilder.sm.update_user(item)
+
+        # get public user data
+        user_data = self.get_client_user_data(item)
+        return self.response(200, **user_data)
+
+    @has_access_api
+    @expose('/resetpassword', methods=["PUT"])
+    @safe
+    def reset_password(self):
+        """Reset user password endpoint for the API, resets user password
+             ---
+             post:
+               description: >-
+                 Reset user password
+               requestBody:
+                 required: true
+                 content:
+                   application/json:
+                     schema:
+                       type: object
+                       properties:
+                         password:
+                           description: The password to rest
+                           example: complex-password
+                           type: string
+                           required: true
+               responses:
+                 200:
+                   description: Update Successful
+                 400:
+                   $ref: '#/components/responses/400'
+                 401:
+                   $ref: '#/components/responses/401'
+                 500:
+                   $ref: '#/components/responses/500'
+             """
+        password = request.json.get('password', None)
+        self.appbuilder.sm.reset_password(g.user.id, password)
+        return self.response(200, message="Update successful")
 
     # testing endpoint (might be useful in general)
     @has_access_api
