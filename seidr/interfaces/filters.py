@@ -1,5 +1,6 @@
 import datetime
 import logging
+import json
 
 from dateutil import parser
 from flask_appbuilder.exceptions import ApplyFilterException
@@ -306,6 +307,18 @@ class FilterSmallerEqual(BaseFilter):
         return query.filter(field <= value)
 
 
+class FilterIn(BaseFilter):
+    name = lazy_gettext("One of")
+    arg_name = "in"
+
+    def apply(self, query, value):
+        values = json.loads(value)
+        if not values:
+            return query
+        query, field = get_field_setup_query(query, self.model, self.column_name)
+        return query.filter(field.in_(values))
+
+
 class SQLAFilterConverter(BaseFilterConverter):
     """
         Class for converting columns into a supported list of filters
@@ -362,6 +375,7 @@ class SQLAFilterConverter(BaseFilterConverter):
                 FilterNotEndsWith,
                 FilterNotContains,
                 FilterNotEqual,
+                FilterIn
             ],
         ),
         ("is_integer",
