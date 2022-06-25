@@ -77,10 +77,11 @@ class AuthApi(BaseApi):
 
         # get menu permissions - this could be more sophisticated
         sm = self.appbuilder.sm
+
         role_ids = [role.id for role in user.roles]
-        menu_permissions = [menuApi for menuApi in ['UsersApi', 'RolesApi', 'PermissionsApi', 'PermissionViewApi'] if
-                            sm.exist_permission_on_roles(menuApi, "can_get", role_ids)]
-        user_data['menu_permissions'] = menu_permissions
+        permissions = [view_menu.name for view_menu in sm.get_all_view_menu() if
+                       sm.exist_permission_on_roles(view_menu.name, "can_get", role_ids)]
+        user_data['permissions'] = permissions
 
         return user_data
 
