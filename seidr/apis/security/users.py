@@ -14,11 +14,11 @@ class UsersApi(BaseModelRestApi):
     datamodel = SQLAInterface(User)
 
     resource_name = "users"
-    list_columns = ["first_name", "last_name", "username", "email", "active", "login_count", "roles"]
+    list_columns = ["first_name", "last_name", "username", "email", "active", "last_login", "login_count", "roles"]
     label_columns = {"username": "Benutzername", "first_name": 'Vorname', "last_name": "Nachname", "email": "Email",
                      "active": 'Aktiv', "login_count": "Anzahl Logins", "roles": "Rollen "}
     show_exclude_columns = ["password", "changed"]
-    search_exclude_columns = ["password", "changed"]
+    search_columns = ["username", "first_name", "last_name", "active", "email", "created_by", "changed_by", "roles"]
     edit_columns = ["first_name", "last_name", "username", "email", "active", "roles"]
     add_columns = ["first_name", "last_name", "username", "active", "email", "roles", "password"]
 
