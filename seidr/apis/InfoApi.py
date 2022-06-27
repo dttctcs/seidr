@@ -3,7 +3,7 @@ from flask_login import login_required
 
 from flask_appbuilder.api import BaseApi, expose
 
-from ..interfaces import BaseModelRestApi
+from seidr.interfaces import BaseModelRestApi
 
 security_level_apis = ['PermissionsApi', 'RolesApi', 'UsersApi', 'ViewsMenusApi', 'PermissionViewApi']
 
