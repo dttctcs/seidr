@@ -5,3 +5,4 @@ from .security.roles import RolesApi
 from .security.users import UsersApi
 from .security.views_menus import ViewsMenusApi
 from .info import InfoApi
+from .decorators import *

@@ -7,7 +7,7 @@ from flask_login import current_user, login_user, logout_user
 from flask_appbuilder import expose
 from flask_appbuilder.api import BaseApi, Model2SchemaConverter, safe
 from flask_appbuilder.models.sqla.interface import SQLAInterface
-from flask_appbuilder.security.manager import AUTH_OID, AUTH_DB, AUTH_LDAP, AUTH_OAUTH, AUTH_REMOTE_USER
+from flask_appbuilder.security.manager import AUTH_DB, AUTH_LDAP, AUTH_REMOTE_USER
 from flask_appbuilder.security.sqla.models import User
 
 from werkzeug.security import generate_password_hash
@@ -17,7 +17,7 @@ from flask_appbuilder.const import (
     API_SECURITY_USERNAME_KEY,
 )
 
-from seidr.utils import login_required
+from seidr.apis import login_required
 
 """ 
 These should prob be in the core
