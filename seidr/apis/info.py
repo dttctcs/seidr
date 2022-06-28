@@ -5,12 +5,13 @@ from flask_appbuilder.api import BaseApi, expose
 
 from seidr.interfaces import BaseModelRestApi
 
-security_level_apis = ['PermissionsApi', 'RolesApi', 'UsersApi', 'ViewsMenusApi', 'PermissionViewApi']
-
 
 class InfoApi(BaseApi):
     resource_name = "info"
     openapi_spec_tag = "Info"
+
+    security_level_apis = ['PermissionsApi', 'RolesApi', 'UsersApi', 'ViewsMenusApi', 'PermissionViewApi']
+    excluded_apis = ['OpenApi', 'MenuApi']
 
     @expose("/", methods=["GET"])
     @login_required
@@ -51,9 +52,11 @@ class InfoApi(BaseApi):
 
         seidr_apis = []
         for base_api in self.appbuilder.baseviews:
-            if isinstance(base_api, BaseApi):
-                level = 'default' if base_api.class_permission_name not in security_level_apis else 'security'
+            if isinstance(base_api, BaseApi) and base_api.class_permission_name not in self.excluded_apis:
+                level = 'default' if base_api.class_permission_name not in self.security_level_apis else 'security'
                 api_type = 'default' if not isinstance(base_api, BaseModelRestApi) else 'crud'
-                seidr_apis.append({'name': base_api.class_permission_name, 'type': api_type, 'level': level})
+                path = base_api.resource_name
+                seidr_apis.append(
+                    {'name': base_api.class_permission_name, 'path': path, 'type': api_type, 'level': level})
 
         return self.response(200, **{"apis": seidr_apis})
