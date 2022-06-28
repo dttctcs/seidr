@@ -1,13 +1,12 @@
 import jwt
 import re
 
-from flask import g, request, redirect
-from flask_login import login_user, logout_user
+from flask import request, redirect
+from flask_login import current_user, login_user, logout_user
 
 from flask_appbuilder import expose
 from flask_appbuilder.api import BaseApi, Model2SchemaConverter, safe
 from flask_appbuilder.models.sqla.interface import SQLAInterface
-from flask_appbuilder.security.decorators import has_access_api
 from flask_appbuilder.security.manager import AUTH_OID, AUTH_DB, AUTH_LDAP, AUTH_OAUTH, AUTH_REMOTE_USER
 from flask_appbuilder.security.sqla.models import User
 
@@ -17,6 +16,8 @@ from flask_appbuilder.const import (
     API_SECURITY_PASSWORD_KEY,
     API_SECURITY_USERNAME_KEY,
 )
+
+from seidr.utils import login_required
 
 """ 
 These should prob be in the core
@@ -121,8 +122,8 @@ class AuthApi(BaseApi):
                $ref: '#/components/responses/500'
          """
 
-        if g.user is not None and g.user.is_authenticated:
-            user_data = self.get_client_user_data(g.user)
+        if current_user is not None and current_user.is_authenticated:
+            user_data = self.get_client_user_data(current_user)
             return self.response(200, **user_data)
 
         # Read and validate request body
@@ -181,7 +182,7 @@ class AuthApi(BaseApi):
               500:
                 $ref: '#/components/responses/500'
          """
-        if g.user is not None and g.user.is_authenticated:
+        if current_user is not None and current_user.is_authenticated:
             return redirect(self.appbuilder.app.config["REDIRECT_URI"])
 
         if provider is None:
@@ -365,8 +366,8 @@ class AuthApi(BaseApi):
         else:
             return self.response(200, message="Registration successful")
 
-    @has_access_api
     @expose('/user', methods=["GET"])
+    @login_required
     @safe
     def user(self):
         """User endpoint for the API, returns the current user data
@@ -378,10 +379,9 @@ class AuthApi(BaseApi):
              200:
                description: Authentication Successful
          """
-        user_data = self.get_client_user_data(g.user)
+        user_data = self.get_client_user_data(current_user)
         return self.response(200, **user_data)
 
-    @has_access_api
     @expose('/user', methods=["PUT"])
     @safe
     def update(self):
@@ -419,7 +419,7 @@ class AuthApi(BaseApi):
              """
         firstname = request.json.get('firstname', None)
         lastname = request.json.get('lastname', None)
-        item = self.appbuilder.sm.get_user_by_id(g.user.id)
+        item = self.appbuilder.sm.get_user_by_id(current_user.id)
 
         # update user
         item.first_name = firstname
@@ -430,7 +430,6 @@ class AuthApi(BaseApi):
         user_data = self.get_client_user_data(item)
         return self.response(200, **user_data)
 
-    @has_access_api
     @expose('/resetpassword', methods=["PUT"])
     @safe
     def reset_password(self):
@@ -462,15 +461,18 @@ class AuthApi(BaseApi):
                    $ref: '#/components/responses/500'
              """
         password = request.json.get('password', None)
-        self.appbuilder.sm.reset_password(g.user.id, password)
+        self.appbuilder.sm.reset_password(current_user.id, password)
         return self.response(200, message="Update successful")
 
     # testing endpoint (might be useful in general)
-    @has_access_api
+
     @expose('/authenticate', methods=["GET"])
+    @login_required
     @safe
     def authenticate(self):
-        return self.response(200, message="Authentication successful")
+
+        user_data = self.get_client_user_data(current_user)
+        return self.response(200, **user_data)
 
     # -------------------------------------------- WIP --------------------------------------------
     # @expose('/signup/email', methods=["POST"])
