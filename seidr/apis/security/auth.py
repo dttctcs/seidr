@@ -17,7 +17,7 @@ from flask_appbuilder.const import (
     API_SECURITY_USERNAME_KEY,
 )
 
-from seidr.apis import login_required
+from seidr.apis.decorators import login_required
 
 """ 
 These should prob be in the core
