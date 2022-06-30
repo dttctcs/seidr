@@ -24,6 +24,10 @@ class BaseModelRestApi(ModelRestApi):
 
     model2schemaconverter = Model2SchemaConverter
 
+    def __init__(self):
+        super().__init__()
+        self.list_title = self.resource_name.capitalize()
+
     def merge_relations_info(self, response, **kwargs):
         """
         Adds relationship information to the response

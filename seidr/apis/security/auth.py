@@ -60,7 +60,7 @@ class AuthApi(BaseApi):
     show_exclude_columns = ['password', 'changed', 'created', 'changed_by', 'created_by']
 
     def __init__(self):
-        super(AuthApi, self).__init__()
+        super().__init__()
         list_cols = self.datamodel.get_user_columns_list()
         self.show_columns = [x for x in list_cols if x not in self.show_exclude_columns]
         self.model2schemaconverter = self.model2schemaconverter(self.datamodel, {})
