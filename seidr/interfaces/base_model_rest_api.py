@@ -26,7 +26,8 @@ class BaseModelRestApi(ModelRestApi):
 
     def __init__(self):
         super().__init__()
-        self.list_title = self.resource_name.capitalize()
+        name = self.resource_name or self.__class__.__name__.lower()
+        self.list_title = name.capitalize()
 
     def merge_relations_info(self, response, **kwargs):
         """
