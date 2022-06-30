@@ -53,7 +53,8 @@ class InfoApi(BaseApi):
         seidr_apis = []
         for base_api in self.appbuilder.baseviews:
             if isinstance(base_api, BaseApi) and base_api.class_permission_name not in self.excluded_apis:
-                name = base_api.list_title if not isinstance(base_api, BaseModelRestApi) else base_api.resource_name
+                name = base_api._prettify_name(base_api.datamodel.model_name) \
+                    if not isinstance(base_api, BaseModelRestApi) else base_api.resource_name
                 path = base_api.resource_name
                 api_type = 'default' if not isinstance(base_api, BaseModelRestApi) else 'crud'
                 level = 'default' if base_api.class_permission_name not in self.security_level_apis else 'security'
