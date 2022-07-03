@@ -11,7 +11,9 @@ from seidr.interfaces.convert import Model2SchemaConverter
 
 class BaseModelRestApi(ModelRestApi):
     allow_browser_login = True
+    icon = "Table"
     related_apis = []
+
     """
         List with ModelRestApi classes
         Will add related_apis information to the info endpoint
@@ -61,6 +63,7 @@ class BaseModelRestApi(ModelRestApi):
         search_filters = dict()
         dict_filters = self._filters.get_search_filters()
 
+        # TODO: this is bugged - since there is no schema for search_columns, search_colums must be a subset of show_columns
         for col in self.search_columns:
             search_filters[col] = {'filters': [
                 {"name": as_unicode(flt.name), "operator": flt.arg_name,
