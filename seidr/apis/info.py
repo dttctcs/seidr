@@ -11,7 +11,7 @@ class InfoApi(BaseApi):
     openapi_spec_tag = "Info"
 
     security_level_apis = ['PermissionsApi', 'RolesApi', 'UsersApi', 'ViewsMenusApi', 'PermissionViewApi']
-    excluded_apis = ['OpenApi', 'MenuApi']
+    excluded_apis = ['OpenApi', 'MenuApi', 'SecurityApi', 'InfoApi', 'AuthApi']
 
     @expose("/", methods=["GET"])
     @login_required
