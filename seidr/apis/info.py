@@ -55,7 +55,7 @@ class InfoApi(BaseApi):
                                                          BaseModelRestApi) else base_api.resource_name.capitalize()
 
                 path = base_api.resource_name
-                api_type = 'default' if not isinstance(base_api, BaseModelRestApi) else 'crud'
+                api_type = 'default' if not isinstance(base_api, BaseModelRestApi) else 'table'
                 level = 'default' if base_api.class_permission_name not in self.security_level_apis else 'security'
                 permission_name = base_api.class_permission_name
 
