@@ -25,7 +25,14 @@ def cli():
     prompt="Your new app name",
     help="Your application name, directory will have this name",
 )
-def create_app(name):
+@click.option(
+    "--studio",
+    prompt="Do you want to install seidr-studio ",
+    type=click.Choice(['yes', 'no']),
+    help="If enabled, will install seidr-studio (https://github.com/dttctcs/seidr-studio) alongside your seidr application "
+         "and setup __init__.py",
+)
+def create_app(name, studio):
     """
         Create a Skeleton application (needs internet connection to github)
     """
@@ -35,34 +42,45 @@ def create_app(name):
         skeleton_dirname = "seidr-skeleton-main"
         skeleton_zipfile = ZipFile(BytesIO(url.read()))
         skeleton_zipfile.extractall()
+
+        init_app_path = os.path.join(skeleton_dirname, 'app', 'init_app.py')
+        init_api_path = os.path.join(skeleton_dirname, 'app', 'init_api.py')
+        if studio == "yes":
+            os.rename(init_app_path, os.path.join(init_app_path, '__init__.py'))
+            os.remove(init_api_path)
+        else:
+            os.rename(init_api_path, os.path.join(init_app_path, '__init__.py'))
+            os.remove(init_app_path)
+
         os.rename(skeleton_dirname, name)
 
-        # seidr studio
-        url = urlopen(SEIDR_STUDIO_URL)
-        studio_dirname = "seidr-studio-main"
-        studio_zipfile = ZipFile(BytesIO(url.read()))
-        for file in studio_zipfile.namelist():
-            if 'build' in file:
-                studio_zipfile.extract(file, name)
+        if studio == "yes":
+            # seidr studio
+            url = urlopen(SEIDR_STUDIO_URL)
+            studio_dirname = "seidr-studio-main"
+            studio_zipfile = ZipFile(BytesIO(url.read()))
+            for file in studio_zipfile.namelist():
+                if 'build' in file:
+                    studio_zipfile.extract(file, name)
 
-        # templates and static folder
-        build_path = os.path.join(name, studio_dirname, 'build')
-        templates_path = os.path.join(name, 'app', 'templates')
-        os.mkdir(templates_path)
-        shutil.move(os.path.join(build_path, 'index.html'), templates_path)
+            # templates and static folder
+            build_path = os.path.join(name, studio_dirname, 'build')
+            templates_path = os.path.join(name, 'app', 'templates')
+            os.mkdir(templates_path)
+            shutil.move(os.path.join(build_path, 'index.html'), templates_path)
 
-        static_path = os.path.join(name, 'app', 'static')
-        os.mkdir(static_path)
-        for file in os.listdir(build_path):
-            file_path = os.path.join(build_path, file)
-            if 'static' not in file_path:
-                shutil.move(file_path, static_path)
-            else:
-                for f in os.listdir(file_path):
-                    sub_path = os.path.join(file_path, f)
-                    shutil.move(sub_path, static_path)
+            static_path = os.path.join(name, 'app', 'static')
+            os.mkdir(static_path)
+            for file in os.listdir(build_path):
+                file_path = os.path.join(build_path, file)
+                if 'static' not in file_path:
+                    shutil.move(file_path, static_path)
+                else:
+                    for f in os.listdir(file_path):
+                        sub_path = os.path.join(file_path, f)
+                        shutil.move(sub_path, static_path)
 
-        shutil.rmtree(os.path.join(name, skeleton_dirname))
+            shutil.rmtree(os.path.join(name, studio_dirname))
 
         click.echo(click.style("Downloaded the skeleton app. Happy coding!", fg="green"))
         return True
