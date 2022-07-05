@@ -45,11 +45,12 @@ def create_app(name, studio):
 
         init_app_path = os.path.join(skeleton_dirname, 'app', 'init_app.py')
         init_api_path = os.path.join(skeleton_dirname, 'app', 'init_api.py')
+        init_path = os.path.join(skeleton_dirname, 'app', '__init__.py')
         if studio == "yes":
-            os.rename(init_app_path, os.path.join(init_app_path, '__init__.py'))
+            os.rename(init_app_path, init_path)
             os.remove(init_api_path)
         else:
-            os.rename(init_api_path, os.path.join(init_app_path, '__init__.py'))
+            os.rename(init_api_path, init_path)
             os.remove(init_app_path)
 
         os.rename(skeleton_dirname, name)
