@@ -11,6 +11,7 @@ from seidr.interfaces.convert import Model2SchemaConverter
 
 class BaseModelRestApi(ModelRestApi):
     allow_browser_login = True
+    icon = "Table"
     related_apis = []
 
     """

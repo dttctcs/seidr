@@ -53,14 +53,14 @@ class InfoApi(BaseApi):
             if isinstance(base_api, BaseApi) and base_api.class_permission_name not in self.excluded_apis:
                 name = base_api.list_title if isinstance(base_api,
                                                          BaseModelRestApi) else base_api.resource_name.capitalize()
-
+                icon = base_api.icon if hasattr(base_api, 'icon') else ''
                 path = base_api.resource_name
                 api_type = 'default' if not isinstance(base_api, BaseModelRestApi) else 'table'
                 level = 'default' if base_api.class_permission_name not in self.security_level_apis else 'security'
                 permission_name = base_api.class_permission_name
 
                 seidr_apis.append(
-                    {'name': name, 'permission_name': permission_name, 'path': path,
+                    {'name': name, 'icon': icon, 'permission_name': permission_name, 'path': path,
                      'type': api_type, 'level': level})
 
         return self.response(200, **{"apis": seidr_apis})
