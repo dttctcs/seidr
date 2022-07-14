@@ -3,15 +3,15 @@ import os
 import shutil
 from urllib.request import urlopen
 from zipfile import ZipFile
-
+import tempfile
 import click
 
-SEIDR_SKELETON_URL = (
-    "https://github.com/dttctcs/seidr-skeleton/archive/master.zip"
-)
-SEIDR_STUDIO_URL = (
-    "https://github.com/dttctcs/seidr-studio/archive/master.zip"
-)
+
+def get_zip(component="-skeleton", branch="main"):
+    studio_name = f"seidr{component}-{branch}"
+    studio_url = f"https://github.com/dttctcs/seidr{component}/archive/refs/heads/{branch}.zip"
+    url = urlopen(studio_url)
+    return ZipFile(BytesIO(url.read()))
 
 
 @click.group()
@@ -20,70 +20,105 @@ def cli():
 
 
 @cli.command("create-app")
-@click.option(
-    "--name",
-    prompt="Your new app name",
-    help="Your application name, directory will have this name",
-)
-@click.option(
-    "--studio",
-    prompt="Do you want to install seidr-studio ",
-    type=click.Choice(['yes', 'no']),
-    help="If enabled, will install seidr-studio (https://github.com/dttctcs/seidr-studio) alongside your seidr application "
-         "and setup __init__.py",
-)
-def create_app(name, studio):
+# @click.option(
+#    "--name",
+#    prompt="Your new app name",
+#    help="Your application name, directory will have this name",
+# )
+def create_app():
     """
         Create a Skeleton application (needs internet connection to github)
     """
+    branch = "main"
     try:
-        # seidr skeleton
-        url = urlopen(SEIDR_SKELETON_URL)
-        skeleton_dirname = "seidr-skeleton-main"
-        skeleton_zipfile = ZipFile(BytesIO(url.read()))
-        skeleton_zipfile.extractall()
+        skeleton_zipfile = get_zip(branch=branch)
 
-        init_app_path = os.path.join(skeleton_dirname, 'app', 'init_app.py')
-        init_api_path = os.path.join(skeleton_dirname, 'app', 'init_api.py')
-        init_path = os.path.join(skeleton_dirname, 'app', '__init__.py')
-        if studio == "yes":
-            os.rename(init_app_path, init_path)
-            os.remove(init_api_path)
-        else:
-            os.rename(init_api_path, init_path)
-            os.remove(init_app_path)
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            skeleton_zipfile.extractall(path=tmpdirname)
+            skeleton_path = f"seidr-skeleton-{branch}"
+            for file in os.listdir(os.path.join(tmpdirname, skeleton_path)):
+                if file == ".gitignore":
+                    continue
+                src_file = os.path.join(tmpdirname, skeleton_path, file)                
+                dst_path = os.path.join(".")            
+                shutil.move(src_file, dst_path)
 
-        os.rename(skeleton_dirname, name)
+        shutil.move(os.path.join(".", 'app', 'init_api.py'), os.path.join(".", 'app', '__init__.py'))        
+        os.chmod('docker-entrypoint.sh', 0o0755)
+        click.echo(click.style(
+            f"Installed skeletton app from {branch}. Happy coding!", fg="green"))
+        return True
+    except Exception as e:
+        click.echo(click.style("Something went wrong {0}".format(e), fg="red"))
+        return False
 
-        if studio == "yes":
-            # seidr studio
-            url = urlopen(SEIDR_STUDIO_URL)
-            studio_dirname = "seidr-studio-main"
-            studio_zipfile = ZipFile(BytesIO(url.read()))
+
+@cli.command("install-studio")
+def install_studio():
+    """
+        Installed seidr studio and updates index.html + __init__.py
+    """
+    try:
+        branch = "main"
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            studio_zipfile = get_zip(component="-studio", branch=branch)
             for file in studio_zipfile.namelist():
                 if 'build' in file:
-                    studio_zipfile.extract(file, name)
+                    studio_zipfile.extract(file, tmpdirname)
 
             # templates and static folder
-            build_path = os.path.join(name, studio_dirname, 'build')
-            templates_path = os.path.join(name, 'app', 'templates')
-            os.mkdir(templates_path)
-            shutil.move(os.path.join(build_path, 'index.html'), templates_path)
+            studio_name = f"seidr-studio-{branch}"
+            build_path = os.path.join(tmpdirname, studio_name, 'build')
+            static_src_path = os.path.join(
+                tmpdirname, studio_name, 'build')
+            templates_path = os.path.join('.', 'app', 'templates')
+            static_path = os.path.join('.', 'app', 'static')
 
-            static_path = os.path.join(name, 'app', 'static')
-            os.mkdir(static_path)
-            for file in os.listdir(build_path):
-                file_path = os.path.join(build_path, file)
+            if not os.path.exists(templates_path):
+                os.mkdir(templates_path)
+            index_dst = os.path.join(templates_path, 'index.html')          
+            if os.path.exists(index_dst):
+                os.remove(index_dst)
+            shutil.move(os.path.join(build_path, 'index.html'), index_dst)
+            if not os.path.exists(static_path):
+                os.mkdir(static_path)
+            for file in os.listdir(static_src_path):
+                file_path = os.path.join(static_src_path, file)
+                dst_file = os.path.join(static_path, file)
+                if os.path.exists(dst_file):
+                    os.remove(dst_file)
                 if 'static' not in file_path:
                     shutil.move(file_path, static_path)
                 else:
                     for f in os.listdir(file_path):
                         sub_path = os.path.join(file_path, f)
-                        shutil.move(sub_path, static_path)
+                        dst_path = os.path.join(static_path, f)
+                        if os.path.exists(dst_file) and os.path.isdir(s)(dst_file):
+                            continue
+                        shutil.move(sub_path, dst_path)                                                
+                                    
+            
 
-            shutil.rmtree(os.path.join(name, studio_dirname))
+        skeleton_zipfile = get_zip(branch=branch)
 
-        click.echo(click.style("Downloaded the skeleton app. Happy coding!", fg="green"))
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            for file in skeleton_zipfile.namelist():
+                if 'init_app.py' in file:
+                    skeleton_zipfile.extract(file, tmpdirname)
+                    break
+            
+            skeleton_path = f"seidr-skeleton-{branch}"
+            
+
+            init_app_path = os.path.join(tmpdirname, skeleton_path, 'app', 'init_app.py')
+            init_path = os.path.join("./", 'app', '__init__.py')
+            if os.path.exists(init_path):
+                os.remove(init_path)
+            shutil.move(init_app_path, init_path)
+            
+
+        click.echo(click.style(
+            f"Installed studio webapp from {branch}. Happy coding!", fg="green"))
         return True
     except Exception as e:
         click.echo(click.style("Something went wrong {0}".format(e), fg="red"))
