@@ -86,7 +86,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
             print(k, v)
 
     def _meta_schema_factory(
-            self, columns: List[str], model: Model, class_mixin, parent_schema_name=None
+        self, columns: List[str], model: Model, class_mixin, parent_schema_name=None
     ):
         """
         Creates ModelSchema marshmallow-sqlalchemy
@@ -96,7 +96,6 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         :param class_mixin: a marshamallow Schema to mix
         :return: ModelSchema
         """
-
         _model = model
         _parent_schema_name = parent_schema_name
         if columns:
@@ -110,12 +109,6 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
                     # The parent_schema_name is useful to humanize nested schema names
                     # This name comes from ModelRestApi
                     parent_schema_name = _parent_schema_name
-                    # include_relationships = True
-
-                _name = fields.Method("get_name")
-
-                def get_name(self, obj):
-                    return getattr(obj, "name", str(obj))
 
         else:
 
@@ -137,10 +130,10 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         return MetaSchema
 
     def _column2enum(
-            self,
-            datamodel: SQLAInterface,
-            column: TreeNode,
-            enum_dump_by_name: bool = False,
+        self,
+        datamodel: SQLAInterface,
+        column: TreeNode,
+        enum_dump_by_name: bool = False,
     ):
         required = not datamodel.is_nullable(column.data)
         enum_class = datamodel.list_columns[column.data].info.get(
@@ -155,11 +148,11 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         return field
 
     def _column2relation(
-            self,
-            datamodel: SQLAInterface,
-            column: TreeNode,
-            nested: bool = False,
-            parent_schema_name: Optional[str] = None,
+        self,
+        datamodel: SQLAInterface,
+        column: TreeNode,
+        nested: bool = False,
+        parent_schema_name: Optional[str] = None,
     ):
         if nested:
             required = not datamodel.is_nullable(column.data)
@@ -183,7 +176,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         # Handle bug on marshmallow-sqlalchemy
         # https://github.com/marshmallow-code/marshmallow-sqlalchemy/issues/163
         if datamodel.is_relation_many_to_many(
-                column.data
+            column.data
         ) or datamodel.is_relation_one_to_many(column.data):
             if datamodel.get_info(column.data).get("required", False):
                 required = True
@@ -197,12 +190,12 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         return field
 
     def _column2field(
-            self,
-            datamodel: SQLAInterface,
-            column: TreeNode,
-            nested: bool = True,
-            enum_dump_by_name: bool = False,
-            parent_schema_name: Optional[str] = None,
+        self,
+        datamodel: SQLAInterface,
+        column: TreeNode,
+        nested: bool = True,
+        enum_dump_by_name: bool = False,
+        parent_schema_name: Optional[str] = None,
     ) -> Field:
         """
 
@@ -240,12 +233,12 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
             return field
 
     def convert(
-            self,
-            columns: List[str],
-            model: Optional[Type[Model]] = None,
-            nested: bool = True,
-            enum_dump_by_name: bool = False,
-            parent_schema_name: Optional[str] = None,
+        self,
+        columns: List[str],
+        model: Optional[Type[Model]] = None,
+        nested: bool = True,
+        enum_dump_by_name: bool = False,
+        parent_schema_name: Optional[str] = None,
     ):
         """
             Creates a Marshmallow ModelSchema class
