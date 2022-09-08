@@ -1,6 +1,6 @@
 from seidr.apis import AuthApi, InfoApi, PermissionViewApi, PermissionsApi, RolesApi, UsersApi, ViewsMenusApi
 from flask_appbuilder.api.manager import OpenApi
-from .views import OpenAPIView
+from .views import OpenAPIView, SeidrIndexView
 class Seidr(object):
 
     def __init__(self, appbuilder):
