@@ -26,7 +26,7 @@ class SeidrIndexView(IndexView):
     route_base = "/"
 
     def __init__(self, **kwargs):
-        self.base_path = os.getenv("SCRIPT_NAME", "/")
+        self.base_path = os.getenv("SCRIPT_NAME", "")  + "/"
         super().__init__(**kwargs)
     
 
