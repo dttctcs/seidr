@@ -8,9 +8,10 @@ from flask_appbuilder.const import API_ADD_COLUMNS_RIS_KEY, API_ADD_TITLE_RIS_KE
 
 from seidr.interfaces.convert import Model2SchemaConverter
 
-
+from copy import deepcopy
 class BaseModelRestApi(ModelRestApi):
     allow_browser_login = True
+    quick_filters = None
     icon = "Table"
     related_apis = []
 
@@ -30,6 +31,7 @@ class BaseModelRestApi(ModelRestApi):
         super().__init__()
         name = self.resource_name or self.__class__.__name__.lower()
         self.list_title = name.capitalize()
+        self.quick_filters = self.quick_filters or []
 
     def merge_relations_info(self, response, **kwargs):
         """
@@ -65,7 +67,7 @@ class BaseModelRestApi(ModelRestApi):
 
         # TODO: this is bugged - since there is no schema for search_columns, search_colums must be a subset of show_columns
         for col in self.search_columns:
-            search_filters[col] = {'filters': [
+            search_filters[col] = {'label': self.label_columns[col], 'filters': [
                 {"name": as_unicode(flt.name), "operator": flt.arg_name,
                  }
                 for flt in dict_filters[col]
@@ -74,6 +76,24 @@ class BaseModelRestApi(ModelRestApi):
             search_filters[col]['schema'] = self._get_field_info(self.show_model_schema.fields[col],
                                                                  self.show_model_schema)
         response[API_FILTERS_RES_KEY] = search_filters
+
+        
+    def merge_quick_filters(self, response, **kwargs):
+        """
+        Overrides parent method to add the schema of a filter to the response. Selection is based on show columns.
+        :param response: The response object
+        :param kwargs: api endpoint kwargs
+        """
+
+        # Get possible search fields and all possible operations
+        quick_filters = deepcopy(self.quick_filters)
+        for qf in quick_filters or []:
+          print(qf)
+          if callable(qf["options"]):
+            qf["options"] = qf["options"]()
+          print(qf)
+
+        response["quickfilters"] = quick_filters
 
     @expose("/_info", methods=["GET"])
     @protect()
@@ -89,6 +109,7 @@ class BaseModelRestApi(ModelRestApi):
     @merge_response_func(ModelRestApi.merge_add_title, API_ADD_TITLE_RIS_KEY)
     @merge_response_func(ModelRestApi.merge_edit_title, API_EDIT_TITLE_RIS_KEY)
     @merge_response_func(merge_relations_info, "relations")
+    @merge_response_func(merge_quick_filters, "quickfilters")
     def info(self, **kwargs):
         """ Endpoint that renders a response for CRUD REST meta data
         ---
@@ -144,4 +165,5 @@ class BaseModelRestApi(ModelRestApi):
             500:
               $ref: '#/components/responses/500'
         """
+        print("==========================================================================")
         return self.info_headless(**kwargs)
