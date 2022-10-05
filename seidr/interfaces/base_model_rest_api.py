@@ -88,10 +88,8 @@ class BaseModelRestApi(ModelRestApi):
         # Get possible search fields and all possible operations
         quick_filters = deepcopy(self.quick_filters)
         for qf in quick_filters or []:
-          print(qf)
           if callable(qf["options"]):
             qf["options"] = qf["options"]()
-          print(qf)
 
         response["quickfilters"] = quick_filters
 
