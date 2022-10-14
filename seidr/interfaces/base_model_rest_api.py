@@ -9,9 +9,23 @@ from flask_appbuilder.const import API_ADD_COLUMNS_RIS_KEY, API_ADD_TITLE_RIS_KE
 from seidr.interfaces.convert import Model2SchemaConverter
 
 from copy import deepcopy
+
+
 class BaseModelRestApi(ModelRestApi):
     allow_browser_login = True
     quick_filters = None
+    """
+        List with quickfilters. Example:
+        quick_filters = [
+            {
+                "name": "buStatic",
+                "label": "Business Unit",
+                "column": "name",
+                "type": "multiselect",
+                "options": [{"value": "Eurowings", "label": "Eurowings BU Label"}]
+            },
+        ]
+    """
     icon = "Table"
     related_apis = []
 
@@ -77,7 +91,6 @@ class BaseModelRestApi(ModelRestApi):
                                                                  self.show_model_schema)
         response[API_FILTERS_RES_KEY] = search_filters
 
-        
     def merge_quick_filters(self, response, **kwargs):
         """
         Overrides parent method to add the schema of a filter to the response. Selection is based on show columns.
@@ -88,8 +101,8 @@ class BaseModelRestApi(ModelRestApi):
         # Get possible search fields and all possible operations
         quick_filters = deepcopy(self.quick_filters)
         for qf in quick_filters or []:
-          if callable(qf["options"]):
-            qf["options"] = qf["options"]()
+            if callable(qf["options"]):
+                qf["options"] = qf["options"]()
 
         response["quickfilters"] = quick_filters
 
