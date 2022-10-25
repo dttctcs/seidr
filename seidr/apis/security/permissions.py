@@ -1,10 +1,10 @@
 from flask_appbuilder.security.sqla.models import Permission
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 
-from seidr.interfaces import BaseModelRestApi
+from seidr.interfaces import SeidrApi
 
 
-class PermissionsApi(BaseModelRestApi):
+class PermissionsApi(SeidrApi):
     # Will allow flask-login cookie authorization on the API
     allow_browser_login = True
     datamodel = SQLAInterface(Permission)

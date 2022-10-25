@@ -5,10 +5,10 @@ from flask_appbuilder.security.sqla.models import User
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from werkzeug.security import generate_password_hash
 
-from seidr.interfaces import BaseModelRestApi
+from seidr.interfaces import SeidrApi
 
 
-class UsersApi(BaseModelRestApi):
+class UsersApi(SeidrApi):
     # Will allow flask-login cookie authorization on the API
     allow_browser_login = True
     datamodel = SQLAInterface(User)

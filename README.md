@@ -3,7 +3,7 @@
 
 ## Usage
 
-Using the `BaseModelRestApi` and `Security Apis` provided by **Seidr**, you can leverage the full feature set of
+Using the `SeidrApi` and `Security Apis` provided by **Seidr**, you can leverage the full feature set of
 FlaskAppbuilder
 decoupled from its Server Side Rendering (ModelView) features. :sparkles:
 
@@ -32,7 +32,7 @@ to your application.
 
 ## Configuration
 
-#### BaseModelRestApi
+#### SeidrApi
 
 - This interface is currently the heart of **Seidr**. It basically is an extension
   of [Flask Appbuilder's](https://github.com/dpgaspar/Flask-AppBuilder) `ModelRestApi` which again is an implementation

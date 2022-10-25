@@ -1,7 +1,7 @@
 from flask_login import login_required
 from flask_appbuilder.api import BaseApi, expose
 
-from seidr.interfaces import BaseModelRestApi
+from seidr.interfaces import SeidrApi
 
 
 class InfoApi(BaseApi):
@@ -52,10 +52,10 @@ class InfoApi(BaseApi):
         for base_api in self.appbuilder.baseviews:
             if isinstance(base_api, BaseApi) and base_api.class_permission_name not in self.excluded_apis:
                 name = base_api.list_title if isinstance(base_api,
-                                                         BaseModelRestApi) else base_api.resource_name.capitalize()
+                                                         SeidrApi) else base_api.resource_name.capitalize()
                 icon = base_api.icon if hasattr(base_api, 'icon') else ''
                 path = base_api.resource_name
-                api_type = 'default' if not isinstance(base_api, BaseModelRestApi) else 'table'
+                api_type = 'default' if not isinstance(base_api, SeidrApi) else 'table'
                 level = 'default' if base_api.class_permission_name not in self.security_level_apis else 'security'
                 permission_name = base_api.class_permission_name
 
