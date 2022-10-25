@@ -43,9 +43,9 @@ def create_app():
                 dst_path = os.path.join(".")            
                 shutil.move(src_file, dst_path)
 
-        shutil.move(os.path.join(".", 'app', 'init_api.py'), os.path.join(".", 'app', '__init__.py'))        
-        os.remove(os.path.join(".", 'app', 'init_app.py'))
-        os.chmod('docker-entrypoint.sh', 0o0755)
+        #shutil.move(os.path.join(".", 'app', 'init_api.py'), os.path.join(".", 'app', '__init__.py'))        
+        #os.remove(os.path.join(".", 'app', 'init_app.py'))
+        #os.chmod('docker-entrypoint.sh', 0o0755)
         click.echo(click.style(
             f"Installed skeletton app from {branch}. Happy coding!", fg="green"))
         return True

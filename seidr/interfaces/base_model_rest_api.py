@@ -11,7 +11,7 @@ from seidr.interfaces.convert import Model2SchemaConverter
 from copy import deepcopy
 
 
-class BaseModelRestApi(ModelRestApi):
+class SeidrApi(ModelRestApi):
     allow_browser_login = True
     quick_filters = None
     """
@@ -33,7 +33,7 @@ class BaseModelRestApi(ModelRestApi):
         List with ModelRestApi classes
         Will add related_apis information to the info endpoint
 
-            class MyApi(BaseModelRestApi):
+            class MyApi(SeidrApi):
                 datamodel = SQLAModel(Group, db.session)
                 related_apis = [MyOtherApi]
 
@@ -178,3 +178,7 @@ class BaseModelRestApi(ModelRestApi):
         """
         print("==========================================================================")
         return self.info_headless(**kwargs)
+
+
+# Backward compatibility going to be removed
+BaseModelRestApi = SeidrApi()
