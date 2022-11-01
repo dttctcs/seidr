@@ -87,8 +87,8 @@ class SeidrApi(ModelRestApi):
                 for flt in dict_filters[col]
             ]}
             # Add schema info
-            search_filters[col]['schema'] = self._get_field_info(self.show_model_schema.fields[col],
-                                                                 self.show_model_schema)
+            search_filters[col]['schema'] = self._get_field_info(self.add_model_schema.fields[col],
+                                                                 self.add_query_rel_fields)
         response[API_FILTERS_RES_KEY] = search_filters
 
     def merge_quick_filters(self, response, **kwargs):
