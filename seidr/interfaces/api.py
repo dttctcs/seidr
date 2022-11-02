@@ -14,6 +14,8 @@ from copy import deepcopy
 class SeidrApi(ModelRestApi):
     allow_browser_login = True
     quick_filters = None
+    search_model_schema = None
+    search_query_rel_fields = None
     """
         List with quickfilters. Example:
         quick_filters = [
@@ -46,6 +48,17 @@ class SeidrApi(ModelRestApi):
         name = self.resource_name or self.__class__.__name__.lower()
         self.list_title = name.capitalize()
         self.quick_filters = self.quick_filters or []
+        self.search_model_schema_name = f"{self.__class__.__name__}.search"
+        
+        self.search_query_rel_fields = self.search_query_rel_fields or dict()
+
+        if self.search_model_schema is None:
+            self.search_model_schema = self.model2schemaconverter.convert(
+                self.search_columns,
+                nested=False,
+                enum_dump_by_name=True,
+                parent_schema_name=self.search_model_schema_name,
+            )
 
     def merge_relations_info(self, response, **kwargs):
         """
@@ -87,8 +100,8 @@ class SeidrApi(ModelRestApi):
                 for flt in dict_filters[col]
             ]}
             # Add schema info
-            search_filters[col]['schema'] = self._get_field_info(self.add_model_schema.fields[col],
-                                                                 self.add_query_rel_fields)
+            search_filters[col]['schema'] = self._get_field_info(self.search_model_schema.fields[col],
+                                                                 self.search_query_rel_fields)
         response[API_FILTERS_RES_KEY] = search_filters
 
     def merge_quick_filters(self, response, **kwargs):

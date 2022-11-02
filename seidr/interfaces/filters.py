@@ -340,7 +340,7 @@ class SQLAFilterConverter(BaseFilterConverter):
         ),
         ("is_relation_many_to_many", [FilterRelationManyToManyEqual]),
         ("is_relation_one_to_many", [FilterRelationManyToManyEqual]),
-        ("is_enum", [FilterEqual, FilterNotEqual]),
+        ("is_enum", [FilterEqual, FilterNotEqual, FilterIn]),
         (
             "is_text",
             [
@@ -352,6 +352,7 @@ class SQLAFilterConverter(BaseFilterConverter):
                 FilterNotEndsWith,
                 FilterNotContains,
                 FilterNotEqual,
+                FilterIn
             ],
         ),
         (
@@ -365,6 +366,7 @@ class SQLAFilterConverter(BaseFilterConverter):
                 FilterNotEndsWith,
                 FilterNotContains,
                 FilterNotEqual,
+                FilterIn
             ],
         ),
         (
@@ -382,15 +384,15 @@ class SQLAFilterConverter(BaseFilterConverter):
             ],
         ),
         ("is_integer",
-         [FilterEqual, FilterGreater, FilterSmaller, FilterNotEqual, FilterSmallerEqual, FilterGreaterEqual]),
+         [FilterEqual, FilterGreater, FilterSmaller, FilterNotEqual, FilterSmallerEqual, FilterGreaterEqual,FilterIn]),
         ("is_float",
-         [FilterEqual, FilterGreater, FilterSmaller, FilterNotEqual, FilterSmallerEqual, FilterGreaterEqual]),
+         [FilterEqual, FilterGreater, FilterSmaller, FilterNotEqual, FilterSmallerEqual, FilterGreaterEqual, FilterIn]),
         ("is_numeric",
-         [FilterEqual, FilterGreater, FilterSmaller, FilterNotEqual, FilterSmallerEqual, FilterGreaterEqual]),
+         [FilterEqual, FilterGreater, FilterSmaller, FilterNotEqual, FilterSmallerEqual, FilterGreaterEqual, FilterIn]),
         (
             "is_date",
-            [FilterEqual, FilterGreater, FilterSmaller, FilterNotEqual, FilterSmallerEqual, FilterGreaterEqual]),
-        ("is_boolean", [FilterEqual, FilterNotEqual]),
+            [FilterEqual, FilterGreater, FilterSmaller, FilterNotEqual, FilterSmallerEqual, FilterGreaterEqual, FilterIn]),
+        ("is_boolean", [FilterEqual, FilterNotEqual, FilterIn]),
         ("is_datetime",
-         [FilterEqual, FilterGreater, FilterSmaller, FilterNotEqual, FilterSmallerEqual, FilterGreaterEqual]),
+         [FilterEqual, FilterGreater, FilterSmaller, FilterNotEqual, FilterSmallerEqual, FilterGreaterEqual, FilterIn]),
     )
