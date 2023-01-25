@@ -10,7 +10,7 @@ functionalities. Even though one loses the inbuilt UI features of **Flask Appbui
 provide [seidr-react](https://github.com/dttctcs/seidr-react), a React component library to easily leverage the same
 functionalities for a React based SPA. We don't provide convenience libraries for any other JS Framework at the time
 being. Since **Seidr** is in active development and implemented features are also subject to change, components and
-hooks for **SeidrUI** are in constant development as well. Keep in mind that these features diverge from the UI
+hooks for **Seidr React** are in constant development as well. Keep in mind that these features diverge from the UI
 capabilities of **Flask Appbuilder**.
 
 ## Installation
