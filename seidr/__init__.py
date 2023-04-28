@@ -32,7 +32,7 @@ class Seidr(object):
 
         @self.appbuilder.app.route('/server-config.js', methods=['GET'])
         def js_manifest():
-            content = render_template_string('window.seid_react_config = {{ react_vars |tojson }}',
+            content = render_template_string('window.seidr_react_config = {{ react_vars |tojson }}',
                                     react_vars=self.appbuilder.app.config["SEIDR_REACT_CONFIG"]).encode('utf-8')
             scriptfile = io.BytesIO(content)
             return send_file(scriptfile, mimetype='application/javascript', download_name="server-config.js")            
