@@ -143,7 +143,7 @@ class FilterEqual(BaseFilter):
     def apply(self, query, value):
         query, field = get_field_setup_query(query, self.model, self.column_name)
         if value == "NULL":
-            return query.filter(field is None)
+            return query.filter(field.is_(None))
         value = set_value_to_type(self.datamodel, self.column_name, value)
         return query.filter(field == value)
 
@@ -156,7 +156,7 @@ class FilterNotEqual(BaseFilter):
         query, field = get_field_setup_query(query, self.model, self.column_name)
         value = set_value_to_type(self.datamodel, self.column_name, value)
         if value == "NULL":
-            return query.filter(not field is None)
+            return query.filter(field.is_not(None))
         return query.filter(field != value)
 
 
