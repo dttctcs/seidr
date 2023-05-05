@@ -279,7 +279,10 @@ class FilterInFunction(BaseFilter):
 
     def apply(self, query, func):
         query, field = get_field_setup_query(query, self.model, self.column_name)
-        return query.filter(field.in_(func()))
+        filter_ = func()
+        if not filter_:
+            return query
+        return query.filter(field.in_())
 
 
 class FilterGreaterEqual(BaseFilter):
