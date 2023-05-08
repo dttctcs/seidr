@@ -13,5 +13,5 @@ class PermissionViewApi(SeidrApi):
     page_size = 200
     max_page_size = 200
 
-    resource_name = "permissionview"
+    resource_name = "permissionviews"
     base_permissions = ['can_get', 'can_info']
