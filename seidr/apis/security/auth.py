@@ -56,7 +56,7 @@ class AuthApi(BaseApi):
     # TODO: The datamodel of UserApi should be the same as the user_model in SecurityManger
     datamodel = SQLAInterface(User)
     model2schemaconverter = Model2SchemaConverter
-
+    allow_browser_login = True
     show_exclude_columns = ['password', 'changed', 'created', 'changed_by', 'created_by']
 
     def __init__(self):
