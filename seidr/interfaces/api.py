@@ -189,6 +189,5 @@ class SeidrApi(ModelRestApi):
             500:
               $ref: '#/components/responses/500'
         """
-        print("==========================================================================")
         return self.info_headless(**kwargs)
 
