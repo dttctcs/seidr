@@ -23,6 +23,7 @@ __all__ = [
     "FilterNotEqual",
     "FilterEndsWith",
     "FilterEqualFunction",
+    "FilterInFunction",
     "FilterGreater",
     "FilterNotEndsWith",
     "FilterRelationManyToManyEqual",
@@ -282,7 +283,7 @@ class FilterInFunction(BaseFilter):
         filter_ = func()
         if not filter_:
             return query
-        return query.filter(field.in_())
+        return query.filter(field.in_(filter_))
 
 
 class FilterGreaterEqual(BaseFilter):
