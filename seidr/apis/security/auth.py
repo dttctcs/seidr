@@ -80,8 +80,7 @@ class AuthApi(BaseApi):
         sm = self.appbuilder.sm
 
         role_ids = [role.id for role in user.roles]
-        permissions = [view.class_permission_name for view in self.appbuilder.baseviews if
-                       sm.exist_permission_on_roles(view.class_permission_name, "can_get", role_ids)]
+        permissions = [x for x in set([v for k, v in sm.get_user_permissions(user)]) if sm.has_access("can_get", x)]
         user_data['permissions'] = permissions
 
         return user_data
