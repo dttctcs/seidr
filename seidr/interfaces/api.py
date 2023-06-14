@@ -195,12 +195,12 @@ class SeidrApi(ModelRestApi):
         """
 
         # Get possible search fields and all possible operations
-        search_suggestions = deepcopy(self.filter_options)
-        for qf in search_suggestions or []:
-            if callable(qf["options"]):
-                qf["options"] = qf["options"]()
+        filter_options = deepcopy(self.filter_options)
+        for k, v in filter_options.items() or {}.items():
+            if callable(v):
+                filter_options[k] = v()
 
-        response["search_suggestions"] = search_suggestions
+        response["filter_options"] = filter_options
 
     @expose("/_info", methods=["GET"])
     @protect()
