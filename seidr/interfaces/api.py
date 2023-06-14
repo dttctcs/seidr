@@ -115,7 +115,7 @@ class SeidrApi(ModelRestApi):
         name = self.resource_name or self.__class__.__name__.lower()
         self.list_title = name.capitalize()
         self.quick_filters = self.quick_filters or []
-        self.filter_options = self.filter_options or []
+        self.filter_options = self.filter_options or {}
         self.search_model_schema_name = f"{self.__class__.__name__}.search"
 
         self.search_query_rel_fields = self.search_query_rel_fields or dict()
