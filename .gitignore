@@ -1,3 +1,5 @@
 build
 venv
-seidr.egg-info
+.idea
+*.egg-info
+__pycache__/
