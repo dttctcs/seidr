@@ -1,4 +1,4 @@
-from app.models import Asset, Unit
+from app.models import Asset, Unit, Application
 from seidr.interfaces import SeidrApi, SQLAInterface
 from app import appbuilder
 
@@ -22,6 +22,23 @@ class AssetApi(SeidrApi):
         }
     ]
 
+class ApplicationApi(SeidrApi):
+    resource_name = "applications"
+    datamodel = SQLAInterface(Application)
+    description_columns = {
+        'name': 'Name of the Application',
+        'description': 'Description'
+    }
+    quick_filters = [
+        {
+            "name": "application_name",
+            "label": "Application Name",
+            "column": "name",
+            "type": "multiselect",
+            "options": [{"value": f"application_{i}", "label": f"application_{i}"} for i in range(10)]
+        }
+    ]
+
 
 class UnitApi(SeidrApi):
     resource_name = "units"
@@ -40,4 +57,5 @@ class UnitApi(SeidrApi):
     ]
 
 appbuilder.add_api(AssetApi)
+appbuilder.add_api(ApplicationApi)
 appbuilder.add_api(UnitApi)
