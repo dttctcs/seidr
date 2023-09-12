@@ -9,6 +9,7 @@ AssetApplication = db.Table('AssetApplication',
     Column('asset_id', Integer, ForeignKey('Asset.id')),
     Column('application_id', Integer, ForeignKey('Application.id')))
 
+
 class Application(Model):
     __tablename__ = 'Application'
     id = Column(Integer, primary_key=True)
@@ -16,6 +17,10 @@ class Application(Model):
     description = Column(String)
     assets = relationship('Asset', secondary=AssetApplication)
     # assets = relationship('Asset', secondary=AssetApplication, backref='Application')
+
+    def __repr__(self):
+        return self.name
+
 
 class Asset(Model):
     __tablename__ = 'Asset'
