@@ -14,7 +14,8 @@ class Application(Model):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     description = Column(String)
-    assets = relationship('Asset', secondary=AssetApplication, backref='Application')
+    assets = relationship('Asset', secondary=AssetApplication)
+    # assets = relationship('Asset', secondary=AssetApplication, backref='Application')
 
 class Asset(Model):
     __tablename__ = 'Asset'
@@ -24,7 +25,8 @@ class Asset(Model):
     owner = relationship("Unit", backref="owner")
     date_time = Column(DateTime())
     date = Column(Date())
-    applications = relationship('Application', secondary=AssetApplication, backref='Asset')
+    applications = relationship('Application', secondary=AssetApplication)
+    # applications = relationship('Application', secondary=AssetApplication, backref='Asset')
 
     def __repr__(self):
         return self.name

@@ -5,6 +5,7 @@ from app import appbuilder
 class AssetApi(SeidrApi):
     resource_name = "assets"
     datamodel = SQLAInterface(Asset)
+    page_size = 200
     description_columns = {
         'name': 'Name of the asset',
         'owner_id': 'ID of the asset owner',

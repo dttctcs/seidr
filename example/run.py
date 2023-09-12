@@ -1,7 +1,7 @@
 from datetime import datetime, date
-
+import random
 from app import app, db
-from app.models import Asset, Unit, Application
+from app.models import Asset, Unit, Application, AssetApplication
 
 
 
@@ -28,7 +28,7 @@ for i in range(100):
     db.session.add(asset)
 db.session.commit()
 
-for i in range(10):
+for i in range(20):
     application = Application(name=f"application_{i}", description=f'info_{i}')
     db.session.add(application)
 db.session.commit()
@@ -36,9 +36,9 @@ db.session.commit()
 assets = db.session.query(Asset).all()
 applications = db.session.query(Application).all()
 
-for i, application in enumerate(applications):
-    for j in range(i * 5, (i + 1) * 5):  # Associate each asset with 5 applications
-        asset = assets[j % len(assets)]
+for i, asset in enumerate(assets):
+    for j in range(1, len(assets) // len(applications) + 1):  # Associate each asset with 5 applications
+        application = applications[random.randint(1, len(applications)-1)]
         asset.applications.append(application)
 
 db.session.commit()
