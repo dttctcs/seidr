@@ -4,9 +4,9 @@ from flask_appbuilder.models.sqla import Model
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from marshmallow import fields
 from marshmallow.fields import Field
-from marshmallow_enum import EnumField
 from marshmallow_sqlalchemy import field_for
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
+from enum import Enum
 
 
 class TreeNode:
@@ -132,18 +132,13 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
     def _column2enum(
         self,
         datamodel: SQLAInterface,
-        column: TreeNode,
-        enum_dump_by_name: bool = False,
+        column: TreeNode
     ):
         required = not datamodel.is_nullable(column.data)
         enum_class = datamodel.list_columns[column.data].info.get(
             "enum_class", datamodel.list_columns[column.data].type
         )
-        if enum_dump_by_name:
-            enum_dump_by = EnumField.NAME
-        else:
-            enum_dump_by = EnumField.VALUE
-        field = EnumField(enum_class, dump_by=enum_dump_by, required=required)
+        field = fields.Enum(Enum(enum_class.name, enum_class.enums), required=required)
         field.unique = datamodel.is_unique(column.data)
         return field
 
@@ -194,7 +189,6 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         datamodel: SQLAInterface,
         column: TreeNode,
         nested: bool = True,
-        enum_dump_by_name: bool = False,
         parent_schema_name: Optional[str] = None,
     ) -> Field:
         """
@@ -202,7 +196,6 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         :param datamodel: SQLAInterface
         :param column: TreeNode column (childs are dotted columns)
         :param nested: Boolean if will create nested fields
-        :param enum_dump_by_name:
         :return: Schema.field
         """
         # Handle relations
@@ -213,8 +206,7 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         # Handle Enums
         elif datamodel.is_enum(column.data):
             return self._column2enum(
-                datamodel, column, enum_dump_by_name=enum_dump_by_name
-            )
+                datamodel, column)
         # is custom property method field?
         if hasattr(getattr(datamodel.obj, column.data), "fget"):
             return fields.Raw(dump_only=True)
@@ -237,7 +229,6 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
         columns: List[str],
         model: Optional[Type[Model]] = None,
         nested: bool = True,
-        enum_dump_by_name: bool = False,
         parent_schema_name: Optional[str] = None,
     ):
         """
@@ -269,7 +260,6 @@ class Model2SchemaConverter(BaseModel2SchemaConverter):
                 _datamodel,
                 column,
                 nested,
-                enum_dump_by_name,
                 parent_schema_name=parent_schema_name,
             )
             _columns.append(column.data)

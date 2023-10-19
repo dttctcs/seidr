@@ -124,7 +124,6 @@ class SeidrApi(ModelRestApi):
             self.search_model_schema = self.model2schemaconverter.convert(
                 self.search_columns,
                 nested=False,
-                enum_dump_by_name=True,
                 parent_schema_name=self.search_model_schema_name,
             )
 
